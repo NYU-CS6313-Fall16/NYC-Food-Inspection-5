@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<title>NYC Food Inspection Results</title>
+
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <!-- Bootstrap core CSS     -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Animation library for notifications   -->
+    <link href="assets/css/animate.min.css" rel="stylesheet"/>
+
+    <!--  Paper Dashboard core CSS    -->
+    <link href="assets/css/paper-dashboard.css" rel="stylesheet"/>
+    
+    <!--  Fonts and icons     -->
+    
+    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+    <link href="assets/css/themify-icons.css" rel="stylesheet">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/bootstrap-select.css" />
+    
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
+    
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">New York City Food Inspection Results</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6" style="width:43%">
+                        <form class="navbar-form navbar-left" role="search">
+                        <div class="form-group">
+                          <select class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" title="Cuisine" data-width="auto">
+                            <optgroup label="American">
+                              <option>Barbeque</option>
+                              <option>Coffee</option>
+                              <option>Burgers</option>
+                            </optgroup>
+                            <optgroup label="Asian">
+                              <option>Indian</option>
+                              <option>Chinese</option>
+                              <option>Thai</option>
+                              <option>Japanese</option>
+                            </optgroup>
+                            <optgroup label="European">
+                              <option>French</option>
+                              <option>German</option>
+                              <option>Italian</option>
+                              <option>Belgian</option>
+                            </optgroup>
+                          </select>
+
+                            <select class="selectpicker" multiple title="Grade" data-actions-box="true" data-width="auto">
+                                <option>Grade A</option>
+                                <option>Grade B</option>
+                                <option>Grade C</option>
+                                <option>Grade Pending</option>
+                            </select>
+
+                            <select class="selectpicker" multiple title="Violations" data-actions-box="true" data-width="auto">
+                                <option>All Violations</option>
+                                <option>Rodents</option>
+                                <option>Insects</option>
+                                <option>Food Temperature</option>
+                                <option>Harmful Chemicals</option>
+                                <option>Personal Hygiene</option>
+                            </select>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="col-md-2" style="width:31%" id="year-group">
+                            <div class="switch-field">
+                                <input type="radio" id="2011" name="radios" value="all" checked>
+                                   <label for="2011">2011</label>
+                                <input type="radio" id="radio2" name="radios"value="false">
+                                   <label for="radio2">2012</label>
+                                <input type="radio" id="radio3" name="radios" value="true">
+                                   <label for="radio3">2013</label>
+                                <input type="radio" id="radio4" name="radios" value="true">
+                                   <label for="radio4">2014</label>
+                                <input type="radio" id="radio5" name="radios" value="true">
+                                   <label for="radio5">2015</label>
+                                <input type="radio" id="radio6" name="radios" value="true">
+                                   <label for="radio6">2016</label>
+                            </div>
+                    </div>    
+                </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card card-map">
+                            <div class="map">
+                                <div id="map"></div>
+                            </div>
+                            <div class="footer">
+                                    <div class="chart-legend">
+                                        <i class="fa fa-circle text-info"></i> Open
+                                        <i class="fa fa-circle text-danger"></i> Click
+                                        <i class="fa fa-circle text-warning"></i> Click Second Time
+                                    </div>
+                            </div>
+				        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-heatmap">
+                            <div class="header">
+                                <h4 class="title">Distribution of Cuisine and Violations</h4>
+                            </div>
+                            <div class="content">
+                                <div id="chartHours" class="ct-chart"></div>
+                                <div class="footer">
+                                    <div class="chart-legend">
+                                        <i class="fa fa-circle text-info"></i> Open
+                                        <i class="fa fa-circle text-danger"></i> Click
+                                        <i class="fa fa-circle text-warning"></i> Click Second Time
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <!--    JUST A FOOTER   -->
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+    
+    <script src="assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+	<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="assets/js/bootstrap-select.min.js"></script>
+
+
+    <!--  Maps Plugin    -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
+
+	<!-- Just Contains GoogleMap Initializer and Listner -->
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="assets/js/scripts.js"></script>
+
+	<script type="text/javascript">
+//    	$(document).ready(function(){
+//            
+//        	demo.initGoogleMaps();
+//            demo.addListeners();
+//            
+//    	});
+	</script>
+
+</html>
