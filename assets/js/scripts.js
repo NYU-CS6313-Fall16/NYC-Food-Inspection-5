@@ -308,7 +308,7 @@ function addListeners(){
     $('.switch-field label').on("click", function(){console.log("Year Selected:"+$(this).text())});
 }
 function initializeMap(){
-    map = L.map('map').setView([40.6782, -73.9442], 11);
+    map = L.map('map').setView([40.7430, -74.0016], 14);
 
     L.tileLayer(mapboxLayout, {
         tileSize: 512,
@@ -358,14 +358,9 @@ function renderD3(data){
                     .attr("r", 3)
                     .on("click", function(){ console.log("clicked");})
                     .on("mouseover", function(d) {	
-                        var window_content = '<div id="iw-container">' +
-                            '<span><div class="iw-title">'+ d.values[0]["DBA"] +'</div></span>' +
-                            '<div class="iw-content">' +
-                            '<img src="' + getGrade(d)["src"] + '">' +
-                            '<p>Cuisine: '+d.values[0]["CUISINE DESCRIPTION"]+'</p>' +
-                            '</div>' +
-                            '</div>';
-                        div.html(window_content)
+                        var window_content = tooltipData(d.values[0]["CAMIS"],d);
+                        div.html(window_content);
+						plotLineChart(d.values[0]["CAMIS"]);
                         div.transition()		
                             .duration(200)
                             .style("opacity", .9)	
@@ -388,6 +383,31 @@ function renderD3(data){
                             map.latLngToLayerPoint(d.LatLng).y +")";
                     });
     }
+}
+
+function tooltipData(camis, restaurant_data){
+	var restaurant_allData = all_data.filter(function(d){ return d['CAMIS']==camis});
+	var currentYear = restaurant_allData.filter(function(d){ return dateformat.parse(d['INSPECTION DATE']).getFullYear() == year });
+	var grade = '';	
+	var violation = 0;
+	var critical = 0;
+	for (var i = 0, len = currentYear.length; i < len; i++) {
+		if(!currentYear[i]['ACTION'].includes('No violations')){
+					violation = violation + 1;
+		}
+		if(!currentYear[i]['CRITICAL FLAG'].includes('Not Critical')){
+			critical = critical + 1;
+		}
+	}
+	var innerHTML = "<div id='tooltip_area'><div id='tooltip_header'>"+currentYear[0]['DBA']+"</div><br/>";
+	innerHTML = innerHTML +"<div id='tooltip_inner_area'>"
+				+"<div style='float:left;width:50%; height:50px'><img src='"+getGrade(restaurant_data)['src']+"' height='40px'></img></div>"
+				+"<div style='float:left; width:25%;text-align:left'>Violations</div>"
+				+"<div style='float:left;width:25%;'>"+violation+"</div>"
+				+"<div style='float:left; width:25%;text-align:left'>Critical</div>"
+				+"<div style='float:left;width:25%;'>"+critical+"</div>"
+				+"</div></div>";
+	return innerHTML;
 }
       
 function getGrade(d){
@@ -413,7 +433,64 @@ function getGrade(d){
     }
 }
 
-d3.csv("assets/data/MH2500.csv", function(error, data){
+function plotLineChart(camis){
+	var margin = {top: 10, right: 40, bottom: 15, left: 5},
+			width = 200 - margin.left - margin.right,
+			height = 200 - margin.top - margin.bottom;
+	var parseDate = d3.time.format("%m/%d/%y").parse;
+
+	allData = all_data.filter(function(d){ return d['CAMIS']==camis});
+	vals = d3.nest()
+			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
+		.rollup(function(leaves) { return leaves.length; })
+		.entries(allData);
+
+	var x = d3.scale.linear().range([0, width]);
+	var y = d3.scale.linear().range([height, 0]);
+
+	var xAxis = d3.svg.axis().scale(x)
+		.orient("bottom").ticks(5).tickSize("-175");
+
+	var yAxis = d3.svg.axis().scale(y)
+		.orient("left").ticks(d3.max(vals, function(d){return d.values})).tickSize("-155");
+
+	var plot_svg = d3.select("#tooltip_area")
+				.append("svg")
+					.attr("width", width + margin.left + margin.right+ 25)
+					.attr("height", height + margin.top + margin.bottom)
+					.style("padding-left","50px")
+					.append("g")
+					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	x.domain([2013, 2017]);
+	y.domain([0, d3.max(vals, function(d) { return d.values; })]);
+
+	plot_svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+
+	plot_svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis);
+		
+	var valueline = d3.svg.line()
+		.x(function(d) {   return x(d.key);})
+		.y(function(d) { return y(d.values); });
+	
+	plot_svg.append("path")
+		.attr("d", valueline(vals));
+
+	plot_svg.selectAll("dot")
+			.data(vals)
+			.enter().append("circle")
+			.attr("r", 1.5)
+			.attr("cx", function(d) { return x(d.key); })
+			.attr("cy", function(d) { return y(d.values); });
+	
+
+}
+
+d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/assets/data/MH2500.csv", function(error, data){
     all_data = data;
     initializeMap();
     filterData(all_data, year);
