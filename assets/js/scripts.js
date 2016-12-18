@@ -441,7 +441,6 @@ function renderD3(data){
     });
     
     var feature = g.selectAll("circle")
-<<<<<<< HEAD
                     .data(data);
     feature.enter().append("circle")
                 .attr("class","marker")
@@ -466,30 +465,6 @@ function renderD3(data){
                 }); 
     
     feature.exit().remove();
-=======
-                    .data(data)
-                    .enter().append("circle")
-                    .attr("class","marker")
-                    .style("opacity", .8) 
-                    .style("fill", function(d){return getGrade(d)["color"]})
-                    .attr("r", 3)
-                    .on("click", function(){ console.log("clicked");})
-                    .on("mouseover", function(d) {	
-                        var window_content = tooltipData(d.values[0]["CAMIS"],d);
-                        div.html(window_content);
-						plotLineChart(d.values[0]["CAMIS"]);
-                        div.transition()		
-                            .duration(200)
-                            .style("opacity", .9)	
-                            .style("left", (d3.event.pageX) + "px")		
-                            .style("top", (d3.event.pageY - 28) + "px");	
-                    })
-                    .on("mouseout", function() {		
-                        div.transition()		
-                            .duration(500)		
-                            .style("opacity", 0);	
-                    });  
->>>>>>> e1be11ec3a0735e5cfb9a935385408e1574edf26
 
     map.on("viewreset", update);
     update();
@@ -560,7 +535,7 @@ function plotLineChart(camis){
 	allData = all_data.filter(function(d){ return d['CAMIS']==camis});
 	vals = d3.nest()
 			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
-		.rollup(function(leaves) { return leaves.length; })
+		.rollup(function(leaves) { console.log(d3.max(leaves,function(d){return d['SCORE'];}));return d3.max(leaves,function(d){return d['SCORE'];}); })
 		.entries(allData);
 
 	var x = d3.scale.linear().range([0, width]);
@@ -570,7 +545,8 @@ function plotLineChart(camis){
 		.orient("bottom").ticks(5).tickSize("-175");
 
 	var yAxis = d3.svg.axis().scale(y)
-		.orient("left").ticks(d3.max(vals, function(d){return d.values})).tickSize("-155");
+		.orient("left").ticks(10).tickSize("-155");
+		//.orient("left").ticks(d3.max(vals, function(d){return d.values})).tickSize("-155");
 
 	var plot_svg = d3.select("#tooltip_area")
 				.append("svg")
@@ -580,7 +556,8 @@ function plotLineChart(camis){
 					.append("g")
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 	x.domain([2013, 2017]);
-	y.domain([0, d3.max(vals, function(d) { return d.values; })]);
+	//y.domain([0, d3.max(vals, function(d) { console.log(d);return d.values; })]);
+	y.domain([0, 100]);
 
 	plot_svg.append("g")
 		.attr("class", "x axis")
@@ -608,11 +585,7 @@ function plotLineChart(camis){
 
 }
 
-<<<<<<< HEAD
-d3.csv("assets/data/BK5200.csv", function(error, data){
-=======
-d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/assets/data/MH2500.csv", function(error, data){
->>>>>>> e1be11ec3a0735e5cfb9a935385408e1574edf26
+d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/assets/data/BK5200.csv", function(error, data){
     all_data = data;
     
     initializeMap();
