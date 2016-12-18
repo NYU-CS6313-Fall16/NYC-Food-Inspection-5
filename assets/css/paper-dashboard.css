@@ -38,7 +38,11 @@ div.tooltip {
 }
 
 #tooltip_area{
+<<<<<<< HEAD
 	align-content:center; 
+=======
+	align:center; 
+>>>>>>> e1be11ec3a0735e5cfb9a935385408e1574edf26
 	background-color:aliceblue;
 	height : 100%;
 	width : 100%;
