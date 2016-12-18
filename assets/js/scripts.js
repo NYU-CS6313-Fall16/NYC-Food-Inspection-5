@@ -294,21 +294,92 @@ var mapboxLayout = 'https://api.mapbox.com/styles/v1/vigneshgawali/ciwnz27st005a
 var g;
 var svg;
 
+var displayMode = "";   // 1 --> Grade, 2 --> Violations 
+
 //Data Variables
 var year = 2016;
+var selectedCuisines = [];
+var selectedViolations = [];
+var selectedGrades = "";
+
 var all_data = [];
 var filtered_data = [];
 var dateformat = d3.time.format("%m/%d/%Y")
 
+function setSelectedYear(yearValue){
+    year = parseFloat(yearValue);
+    
+    console.log("Displayng Data for year "+year);
+    filterData(all_data, year);
+//    console.log(filtered_data);
+    renderD3(filtered_data);
+}
+
+function displayByGrade(gradeSelection){
+    displayMode = 1;
+    
+    $('#map-legend').html('');
+    var legendContent = "<i class='fa fa-circle gradeA'></i> Grade A"+
+                                    "<i class='fa fa-circle gradeB'></i> Grade B" +
+                                    "<i class='fa fa-circle gradeC'></i> Grade C" +
+                                    "<i class='fa fa-circle gradeP'></i> Grade Pending";
+    
+    $('#map-legend').html(legendContent);
+    
+    selectedGrades = "";
+    console.log(gradeSelection);
+    if(gradeSelection.includes("Grade A")){
+        selectedGrades += "A";
+    }
+    if(gradeSelection.includes("Grade B")){
+        selectedGrades += "B";
+    }
+    if(gradeSelection.includes("Grade C")){
+        selectedGrades += "C";
+    }
+    if(gradeSelection.includes("Grade Pending")){
+        selectedGrades += "P";
+    }
+    console.log(selectedGrades);
+    filterByGrade(filtered_data, selectedGrades);
+    console.log(filtered_data);
+    renderD3(filtered_data);
+}
+
+function setSelectedCuisines(cuisineSelection){
+    
+}
+
+function setSelectedViolations(violationSelection){
+    displayMode = 2;
+    $('#map-legend').html('');
+    var legendContent = "<i class='fa fa-circle gradeA'></i> Grade A"+
+                                    "<i class='fa fa-circle gradeB'></i> Grade B" +
+                                    "<i class='fa fa-circle gradeC'></i> Grade C" +
+                                    "<i class='fa fa-circle gradeB'></i> Grade B" +
+                                    "<i class='fa fa-circle gradeC'></i> Grade C" +
+                                    "<i class='fa fa-circle gradeC'></i> Grade C";
+    
+    $('#map-legend').html(legendContent);
+    console.log("violation selected");
+}
+
 function addListeners(){
-    $('.dropdown-menu.grade a').on("click", function(){ console.log("Clicked grade: "+$(this).text())});
-    $('.dropdown-menu.cuisine a').on("click", function(){ console.log("Clicked cuisine: "+$(this).text())});
-    $('.dropdown-menu.violation a').on("click", function(){ console.log("Clicked violation: "+$(this).text())});
+    $('#gradeSelect').on('changed.bs.select', function(e, clickedIndex, oldValue, newValue){
         
-    $('.switch-field label').on("click", function(){console.log("Year Selected:"+$(this).text())});
+        displayByGrade($(this).find("option:selected").text());
+    });
+    
+    $('#violationSelect').on('changed.bs.select', function(e, clickedIndex, oldValue, newValue){
+        setSelectedViolations($(this).find("option:selected").text());
+    });
+    
+    $('.switch-field label').on("click", function(){
+        setSelectedYear($(this).text());
+    });
 }
 function initializeMap(){
-    map = L.map('map').setView([40.6782, -73.9442], 11);
+    map = L.map('map').setView([40.7430, -74.0016], 14);
 
     L.tileLayer(mapboxLayout, {
         tileSize: 512,
@@ -323,10 +394,13 @@ function initializeMap(){
 
     svg = d3.select("#map").select("svg"),
     g = svg.append("g");
+    
+    addListeners();
 
 }
 
 function filterData(data, data_year){
+    filtered_data = null;
     console.log("Performing Filter");
     filtered_data = data.filter(function(d){
         return d['INSPECTION DATE'] != undefined && dateformat.parse(d['INSPECTION DATE']).getFullYear() === data_year;
@@ -341,7 +415,24 @@ function filterData(data, data_year){
     });
 
     filtered_data = sorted_data;
-    console.log("Filteration is Done!")
+    console.log("Filteration is Done!");
+    console.log(filtered_data.length);
+}
+
+function filterByGrade(data, gradeString){
+    console.log(data);
+    filtered_data = null;
+    console.log("Performing filter by grade:");
+    if(gradeString === ""){
+        filterData(all_data,year);    
+    }
+    else{
+        filtered_data = data.filter(function(d){
+            for(var i=0; i<d.values.length; i++){
+                return dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year &&   gradeString.includes(d.values[i]['GRADE'])       
+            }
+        });    
+    }
 }
 
 function renderD3(data){
@@ -350,33 +441,30 @@ function renderD3(data){
     });
     
     var feature = g.selectAll("circle")
-                    .data(data)
-                    .enter().append("circle")
-                    .attr("class","marker")
-                    .style("opacity", .8) 
-                    .style("fill", function(d){return getGrade(d)["color"]})
-                    .attr("r", 3)
-                    .on("click", function(){ console.log("clicked");})
-                    .on("mouseover", function(d) {	
-                        var window_content = '<div id="iw-container">' +
-                            '<span><div class="iw-title">'+ d.values[0]["DBA"] +'</div></span>' +
-                            '<div class="iw-content">' +
-                            '<img src="' + getGrade(d)["src"] + '">' +
-                            '<p>Cuisine: '+d.values[0]["CUISINE DESCRIPTION"]+'</p>' +
-                            '</div>' +
-                            '</div>';
-                        div.html(window_content)
-                        div.transition()		
-                            .duration(200)
-                            .style("opacity", .9)	
-                            .style("left", (d3.event.pageX) + "px")		
-                            .style("top", (d3.event.pageY - 28) + "px");	
-                    })
-                    .on("mouseout", function() {		
-                        div.transition()		
-                            .duration(500)		
-                            .style("opacity", 0);	
-                    });  
+                    .data(data);
+    feature.enter().append("circle")
+                .attr("class","marker")
+                .style("opacity", .8) 
+                .style("fill", function(d){return getGrade(d)["color"]})
+                .attr("r", 3)
+                .on("click", function(){ console.log("clicked");})
+                .on("mouseover", function(d) {	
+                    var window_content = tooltipData(d.values[0]["CAMIS"],d);
+                    div.html(window_content);
+                    plotLineChart(d.values[0]["CAMIS"]);
+                    div.transition()		
+                        .duration(200)
+                        .style("opacity", .9)	
+                        .style("left", (d3.event.pageX) + "px")		
+                        .style("top", (d3.event.pageY - 28) + "px");	
+                })
+                .on("mouseout", function() {		
+                    div.transition()		
+                        .duration(500)		
+                        .style("opacity", 0);	
+                }); 
+    
+    feature.exit().remove();
 
     map.on("viewreset", update);
     update();
@@ -389,32 +477,115 @@ function renderD3(data){
                     });
     }
 }
+
+function tooltipData(camis, restaurant_data){
+	var restaurant_allData = all_data.filter(function(d){ return d['CAMIS']==camis});
+	var currentYear = restaurant_allData.filter(function(d){ return dateformat.parse(d['INSPECTION DATE']).getFullYear() == year });
+	var grade = '';	
+	var violation = 0;
+	var critical = 0;
+	for (var i = 0, len = currentYear.length; i < len; i++) {
+		if(!currentYear[i]['ACTION'].includes('No violations')){
+					violation = violation + 1;
+		}
+		if(!currentYear[i]['CRITICAL FLAG'].includes('Not Critical')){
+			critical = critical + 1;
+		}
+	}
+	var innerHTML = "<div id='tooltip_area'><div id='tooltip_header'>"+currentYear[0]['DBA']+"</div><br/>";
+	innerHTML = innerHTML +"<div id='tooltip_inner_area'>"
+				+"<div style='float:left;width:50%; height:50px'><img src='"+getGrade(restaurant_data)['src']+"' height='40px'></img></div>"
+				+"<div style='float:left; width:25%;text-align:left'>Violations</div>"
+				+"<div style='float:left;width:25%;'>"+violation+"</div>"
+				+"<div style='float:left; width:25%;text-align:left'>Critical</div>"
+				+"<div style='float:left;width:25%;'>"+critical+"</div>"
+				+"</div></div>";
+	return innerHTML;
+}
       
 function getGrade(d){
     var grade = "";
 
     for(var i=0; i<d.values.length;i++){
-        if(d.values[i]["GRADE"] != ""){
+        if(d.values[i]["GRADE"] != "" && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year){
             grade = d.values[i]["GRADE"];
         }
     }    
 
     if(grade === "A"){
-        return {color:"blue", src:"assets/img/A.png"};
+        return {color:"#214099", src:"assets/img/A.png"};
     }
     else if(grade === "B"){
-        return {color:"green", src:"assets/img/B.png"};
+        return {color:"#03A45E", src:"assets/img/B.png"};
     }
     else if(grade === "C"){
-        return {color:"yellow", src:"assets/img/C.png"};
+        return {color:"#F8A51B", src:"assets/img/C.png"};
     }
     else{
-        return {color:"grey", src:"assets/img/N.png"};
+        return {color:"#A1A1A1", src:"assets/img/N.png"};
     }
 }
 
-d3.csv("assets/data/MH2500.csv", function(error, data){
+function plotLineChart(camis){
+	var margin = {top: 10, right: 40, bottom: 15, left: 5},
+			width = 200 - margin.left - margin.right,
+			height = 200 - margin.top - margin.bottom;
+	var parseDate = d3.time.format("%m/%d/%y").parse;
+
+	allData = all_data.filter(function(d){ return d['CAMIS']==camis});
+	vals = d3.nest()
+			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
+		.rollup(function(leaves) { return leaves.length; })
+		.entries(allData);
+
+	var x = d3.scale.linear().range([0, width]);
+	var y = d3.scale.linear().range([height, 0]);
+
+	var xAxis = d3.svg.axis().scale(x)
+		.orient("bottom").ticks(5).tickSize("-175");
+
+	var yAxis = d3.svg.axis().scale(y)
+		.orient("left").ticks(d3.max(vals, function(d){return d.values})).tickSize("-155");
+
+	var plot_svg = d3.select("#tooltip_area")
+				.append("svg")
+					.attr("width", width + margin.left + margin.right+ 25)
+					.attr("height", height + margin.top + margin.bottom)
+					.style("padding-left","50px")
+					.append("g")
+					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	x.domain([2013, 2017]);
+	y.domain([0, d3.max(vals, function(d) { return d.values; })]);
+
+	plot_svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+
+	plot_svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis);
+		
+	var valueline = d3.svg.line()
+		.x(function(d) {   return x(d.key);})
+		.y(function(d) { return y(d.values); });
+	
+	plot_svg.append("path")
+		.attr("d", valueline(vals));
+
+	plot_svg.selectAll("dot")
+			.data(vals)
+			.enter().append("circle")
+			.attr("r", 1.5)
+			.attr("cx", function(d) { return x(d.key); })
+			.attr("cy", function(d) { return y(d.values); });
+	
+
+}
+
+d3.csv("assets/data/BK5200.csv", function(error, data){
     all_data = data;
+    
     initializeMap();
     filterData(all_data, year);
     renderD3(filtered_data);

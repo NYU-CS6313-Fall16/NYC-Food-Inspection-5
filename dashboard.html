@@ -48,7 +48,7 @@
                     <div class="col-md-6" style="width:43%">
                         <form class="navbar-form navbar-left" role="search">
                         <div class="form-group">
-                          <select class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" title="Cuisine" data-width="auto">
+                          <select id="cuisineSelect" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" title="Cuisine" data-width="auto">
                             <optgroup label="American">
                               <option>Barbeque</option>
                               <option>Coffee</option>
@@ -68,14 +68,14 @@
                             </optgroup>
                           </select>
 
-                            <select class="selectpicker" multiple title="Grade" data-actions-box="true" data-width="auto">
+                            <select id="gradeSelect" class="selectpicker" multiple title="Grade" data-actions-box="true" data-width="auto">
                                 <option>Grade A</option>
                                 <option>Grade B</option>
                                 <option>Grade C</option>
                                 <option>Grade Pending</option>
                             </select>
 
-                            <select class="selectpicker" multiple title="Violations" data-actions-box="true" data-width="auto">
+                            <select id="violationSelect" class="selectpicker" multiple title="Violations" data-actions-box="true" data-width="auto">
                                 <option>All Violations</option>
                                 <option>Rodents</option>
                                 <option>Insects</option>
@@ -88,17 +88,13 @@
                     </div>
                     <div class="col-md-2" style="width:31%" id="year-group">
                             <div class="switch-field">
-                                <input type="radio" id="2011" name="radios" value="all" checked>
-                                   <label for="2011">2011</label>
-                                <input type="radio" id="radio2" name="radios"value="false">
-                                   <label for="radio2">2012</label>
                                 <input type="radio" id="radio3" name="radios" value="true">
                                    <label for="radio3">2013</label>
                                 <input type="radio" id="radio4" name="radios" value="true">
                                    <label for="radio4">2014</label>
                                 <input type="radio" id="radio5" name="radios" value="true">
                                    <label for="radio5">2015</label>
-                                <input type="radio" id="radio6" name="radios" value="true">
+                                <input type="radio" id="radio6" name="radios" value="true" checked>
                                    <label for="radio6">2016</label>
                             </div>
                     </div>    
@@ -108,15 +104,13 @@
                 <div class="row">
                     <div class="col-md-8">
                         <div class="card card-map">
-                            <div class="map">
-                                <div id="map"></div>
+                            <div class="map" >
+                                <div id="map" ></div>
                             </div>
                             <div class="footer">
-                                    <div class="chart-legend">
-                                        <i class="fa fa-circle text-info"></i> Open
-                                        <i class="fa fa-circle text-danger"></i> Click
-                                        <i class="fa fa-circle text-warning"></i> Click Second Time
-                                    </div>
+                                <div class="chart-legend" id="map-legend" width="100%">
+                                    
+                                </div>
                             </div>
 				        </div>
                     </div>
@@ -128,10 +122,8 @@
                             <div class="content">
                                 <div id="chartHours" class="ct-chart"></div>
                                 <div class="footer">
-                                    <div class="chart-legend">
-                                        <i class="fa fa-circle text-info"></i> Open
-                                        <i class="fa fa-circle text-danger"></i> Click
-                                        <i class="fa fa-circle text-warning"></i> Click Second Time
+                                    <div class="chart-legend" id="heatmap-legend">
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -140,14 +132,6 @@
                 </div>
             </div>
         </div>
-
-
-        <footer class="footer">
-            <div class="container-fluid">
-                <!--    JUST A FOOTER   -->
-            </div>
-        </footer>
-
     </div>
 
 </body>

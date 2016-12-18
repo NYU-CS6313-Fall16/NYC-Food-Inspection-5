@@ -1,11 +1,34 @@
+.fa-circle.gradeA{
+    color: #214099;
+}
+
+.fa-circle.gradeB{
+    color: #03A45E;
+}
+
+.fa-circle.gradeC{
+    color: #F8A51B;
+}
+
+.fa-circle.gradeP{
+    color: #A1A1A1;
+}
+
+#map-legend{
+    display: inherit;
+}
+
+#heatmap-legend{
+    display: inherit;
+}
+
 circle:hover {
     cursor: pointer; 
 }
 div.tooltip {	
-    position: absolute;			
-    text-align: center;			
-    width: 60px;					
-    height: 28px;					
+    position: absolute;					
+	width : 250px;
+	height : 320px;				
     padding: 2px;				
     font: 12px sans-serif;		
     background: lightsteelblue;	
@@ -13,6 +36,58 @@ div.tooltip {
     border-radius: 8px;			
     pointer-events: none;			
 }
+
+#tooltip_area{
+	align-content:center; 
+	background-color:aliceblue;
+	height : 100%;
+	width : 100%;
+}
+#tooltip_header{
+	text-align:center;
+	background-color:#48b5e9; 
+	width:100%; 
+	height:30px; 
+	line-height: 30px;
+	font-size:14px;
+	font-weight: bold;
+}
+#tooltip_inner_area{
+	align:center; 
+	background-color:aliceblue;
+	padding-left: 10px;
+	top: -5px;
+}
+path { 
+	stroke: red;
+	stroke-width: 2;
+	fill: none;
+}
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+}
+
+.domain{
+	fill : none;
+	stroke : black;
+}
+
+.tick{
+	font-size : 12px;
+}
+
+.tick line{
+	stroke : #ccc;
+}
+circle{
+	fill: red;			
+}
+
 #iw-container {
     margin-bottom: 5px;
 }
@@ -66,7 +141,7 @@ div.tooltip {
   overflow: hidden;
   margin-top: 21px;
   margin-bottom: 21px;
-  float: right;
+  float: left;
 }
 
 .switch-title {
