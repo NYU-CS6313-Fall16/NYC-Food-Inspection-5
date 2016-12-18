@@ -505,11 +505,21 @@ function tooltipData(camis, restaurant_data){
       
 function getGrade(d){
     var grade = "";
-
+    var maxScore = 0;
     for(var i=0; i<d.values.length;i++){
-        if(d.values[i]["GRADE"] != "" && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year){
-            grade = d.values[i]["GRADE"];
-        }
+        //if(d.values[i]["GRADE"] != "" && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year){
+        //    grade = d.values[i]["GRADE"];
+        //}
+        if(d.values[i]['SCORE'] > maxScore){
+		maxScore = d.values[i]['SCORE'];
+	}
+	if(maxScore <= 13 ){
+		grade = 'A';	
+	}else if(maxScore <= 27 ){
+		grade = 'B';	
+	}else{
+		grade = 'C';
+	}
     }    
 
     if(grade === "A"){
@@ -535,7 +545,7 @@ function plotLineChart(camis){
 	allData = all_data.filter(function(d){ return d['CAMIS']==camis});
 	vals = d3.nest()
 			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
-		.rollup(function(leaves) { console.log(d3.max(leaves,function(d){return d['SCORE'];}));return d3.max(leaves,function(d){return d['SCORE'];}); })
+		.rollup(function(leaves) { return d3.max(leaves,function(d){return d['SCORE'];}); })
 		.entries(allData);
 
 	var x = d3.scale.linear().range([0, width]);
