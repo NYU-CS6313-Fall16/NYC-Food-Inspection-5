@@ -478,6 +478,81 @@ var FACILITY = 'Facility/Storage';
 var REGULATION = 'Regulation';
 var VERMIN = 'Vermin';
 
+function heatMapTooltipData(violation, cuisine){
+
+	var innerHTML = "<div class='tooltip_area'><div class='tooltip_header'>"+cuisine+' vs '+violation+"</div><br/>";
+
+    innerHTML = innerHTML +"<div class='tooltip_inner_area'></div></div>";
+    
+	return innerHTML;
+}
+
+function heatMapPlotLineChart(violation, cuisine){
+
+	var margin = {top: 10, right: 40, bottom: 15, left: 5},
+			width = 250 - margin.left - margin.right,
+			height = 200 - margin.top - margin.bottom;
+	var parseDate = d3.time.format("%m/%d/%y").parse;
+
+    var violationData = all_data.filter(function(d){ 
+        return condenseCuisine(d['CUISINE DESCRIPTION'])==cuisine 
+            && violation == convertViolation(d['VIOLATION CODE']) 
+            && dateformat.parse(d['INSPECTION DATE']).getFullYear() > 2012});
+
+	vals = d3.nest()
+			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
+			.rollup(function(leaves) { return leaves.length })
+		.entries(violationData);
+    console.log(vals);
+
+	var x = d3.scale.linear().range([0, width]);
+	var y = d3.scale.linear().range([height, 0]);
+
+	var xAxis = d3.svg.axis().scale(x)
+		.orient("bottom").ticks(5).tickSize("-175");
+
+	var yAxis = d3.svg.axis().scale(y)
+		.orient("left").ticks(10).tickSize("-205");
+		//.orient("left").ticks(d3.max(vals, function(d){return d.values})).tickSize("-155");
+
+    
+	var plot_svg = d3.select(".tooltip_area")
+				.append("svg")
+					.attr("width", width + margin.left + margin.right+ 25)
+					.attr("height", height + margin.top + margin.bottom)
+					.style("padding-left","50px")
+					.append("g")
+					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+   
+	x.domain([2013, 2017]);
+	//y.domain([0, d3.max(vals, function(d) { console.log(d);return d.values; })]);
+	y.domain([0, 3500]);
+
+	plot_svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+
+	plot_svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis);
+		
+	var valueline = d3.svg.line()
+		.x(function(d) {   return x(d.key);})
+		.y(function(d) { return y(+d.values); });
+	
+	plot_svg.append("path")
+		.attr("d", valueline(vals));
+
+	plot_svg.selectAll("dot")
+			.data(vals)
+			.enter().append("circle")
+			.attr("r", 2.5)
+			.attr("cx", function(d) { return x(d.key); })
+			.attr("cy", function(d) { return y(+d.values); });
+    console.log(plot_svg);
+}
+
 function convertViolation(input){
             
     if (input.startsWith('02')) {
@@ -624,6 +699,8 @@ function heatMap(data) {
             entry.cuisine = cuisine;
             entry.violation = violation;
             entry.count = countedData[cuisine][violation] / toCounts[cuisine];
+            entry.actual = countedData[cuisine][violation];
+            entry.total = toCounts[cuisine];
             formattedData.push(entry);
             if (entry.count > maxCount) {
                 maxCount = entry.count;
@@ -683,7 +760,26 @@ function renderChart(data, maxCount) {
         .attr("y", 
               function(d) { return yScale(d.violation) })
         .attr("fill", function(d, i) {return cScale(d.count)})
-        .on("mouseover",function(){});  // Something for mouseover
+        .on("mouseover",function(d,i){console.log(d.actual+" from "+d.total)
+            div.html(heatMapTooltipData(d.violation,d.cuisine));
+            div.transition()		
+                        .duration(100)
+                        .style("opacity", 1)	
+                        .style("left", (d3.event.pageX) + "px")		
+                        .style("top",function(){
+                            if(d3.event.pageY+150 > 580){
+                                return d3.event.pageY-320+"px";
+                            }
+                            else{
+                                return d3.event.pageY+"px"
+                            }
+                        });	
+            heatMapPlotLineChart(d.violation,d.cuisine);}
+        ).on("mouseout", function() {		
+                    div.transition()		
+                        .duration(500)		
+                        .style("opacity", 0);	
+                });  // Something for mouseover
 }
 
 //--------------------------------------------------------------------
@@ -773,13 +869,12 @@ function renderD3(data){
                         .style("opacity", 1)	
                         .style("left", (d3.event.pageX) + "px")		
                         .style("top",function(){
-//                            if(d3.event.pageY+150 > 580){
-//                                return d3.event.pageY-320+"px";
-//                            }
-//                            else{
-//                                return d3.event.pageY+"px"
-//                            }
-                            return d3.event.pageY+"px";
+                            if(d3.event.pageY+150 > 580){
+                                return d3.event.pageY-320+"px";
+                            }
+                            else{
+                                return d3.event.pageY+"px"
+                            }
                         });	
                 })
                 .on("mouseout", function() {		
