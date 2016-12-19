@@ -206,7 +206,7 @@ function filterByGrade(data, gradeString){
 //-------------Filter Data Based on Cuisine Selection----------------------
 
 function getShortCuisine(inputCuisine){
-    if(inputCuisine.includes('Cafe')||inputCuisine.includes('Tea')){
+    if(inputCuisine.includes('Cafe')||inputCuisine.includes('Tea')||inputCuisine.includes('Coffee')){
         return 'Cafe';
     }
     if(inputCuisine.includes('Latin')){
@@ -254,8 +254,16 @@ function filterByCuisine(data, cuisineString){
 
 //-------------Filter Data Based on Violations Selection-------------------
 
-function setSelectedViolations(violationSelection){
+function setSelectedViolations(){
+    console.log(selectedViolations);
     
+    var violationFilteredData = filtered_data.filter(function(d){
+       for(var i = 0; i < d.values.length; i++){
+           return selectedViolations.includes(convertViolation(d.values[i]["VIOLATION CODE"]))
+       }
+    });
+    
+    renderD3(violationFilteredData);
 }
 //-------------------------------------------------------------------------
 
@@ -295,7 +303,7 @@ function filterAllSelections(){
     }
     else if(selectedGrades === "" && selectedCuisines === "" && selectedViolations !== ""){
         console.log("Only Violations Selected");
-//         Yet To Write for Only Violations
+        setSelectedViolations();
     }
     else if(selectedGrades !== "" && selectedCuisines !== "" && selectedViolations === ""){
         console.log("Grades and Cuisines Selected");
@@ -310,22 +318,58 @@ function filterAllSelections(){
     else if(selectedGrades === "" && selectedCuisines !== "" && selectedViolations !== ""){
         console.log("Cuisines and Violations Selected");
         
+        // Filter Cuisine
+        var filtered1 = filtered_data.filter(function(d){
+            return selectedCuisines.includes(getShortCuisine(d.values[0]['CUISINE DESCRIPTION']))
+        });
+        
+        //Filter Violation
+        var masterFilteredData = filtered1.filter(function(d){
+            for(var i = 0; i < d.values.length; i++){
+                return selectedViolations.includes(convertViolation(d.values[i]["VIOLATION CODE"]))
+            }
+        });
+        
+        renderD3(masterFilteredData);
     }
     else if(selectedGrades !== "" && selectedCuisines === "" && selectedViolations !== ""){
         console.log("Grades and Violations Selected");
         
+        // Filter Grade
+        var filtered1 = filtered_data.filter(function(d){
+            return selectedGrades.includes(getGrade(d)["grade"]);
+        });
+        
+        //Filter Violation
+        var masterFilteredData = filtered1.filter(function(d){
+            for(var i = 0; i < d.values.length; i++){
+                return selectedViolations.includes(convertViolation(d.values[i]["VIOLATION CODE"]))
+            }
+        });
+        
+        renderD3(masterFilteredData);
     }
     else if(selectedGrades !== "" && selectedCuisines !== "" && selectedViolations !== ""){
         console.log("All 3 Selected");
         
+        // Filter with Grade and Cuisine
+        var filtered1 = filtered_data.filter(function(d){
+            return selectedCuisines.includes(getShortCuisine(d.values[0]['CUISINE DESCRIPTION'])) &&
+                         selectedGrades.includes(getGrade(d)["grade"]);
+        });
+        
+        // Filter with Violation
+        var masterFilteredData = filtered1.filter(function(d){
+            for(var i = 0; i < d.values.length; i++){
+                return selectedViolations.includes(convertViolation(d.values[i]["VIOLATION CODE"]))
+            }
+        });
+        
+        renderD3(masterFilteredData);
     }
-    
-    
 }
 
 //-------------------------------------------------------------------------
-
-
 
 //--------------------Tooltip and Line Chart--------------------------
 
@@ -432,7 +476,7 @@ function plotLineChart(camis,restaurant_data){
 //--------------------------------------------------------------------
 
 //--------------------HEATMAP-----------------------------------------
-var TEMPERATURE = 'Food Temp.';
+var TEMPERATURE = 'Food Temp';
 var CONTAMINATION = 'Unclean Food';
 var HYGIENE = 'Staff Hygiene';
 var FACILITY = 'Facility/Storage';
@@ -532,7 +576,9 @@ function condenseCuisine(input) {
 function heatMap(data) {
     var filteredData = [];
     for( var entry in data) {
-        filteredData.push(data[entry].values[0]);
+        for(var i=0; i<data[entry].values.length; i++){
+            filteredData.push(data[entry].values[i]);    
+        }
     }
     var condensedData = [];
     var maxCount = 0;
@@ -763,7 +809,7 @@ function renderD3(data){
 //--------------------------------------------------------------------
 
 //--------------------Initial Data Load and Render--------------------
-
+//https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/
 d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/assets/data/BK5200.csv", function(error, data){
     all_data = data;
     initializeMap();
