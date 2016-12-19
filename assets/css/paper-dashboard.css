@@ -1,3 +1,6 @@
+rect {
+    opacity: 1
+}
 .fa-circle.gradeA{
     color: #214099;
 }
@@ -23,12 +26,17 @@
 }
 
 circle:hover {
-    cursor: pointer; 
+    cursor: pointer;
+}
+
+.marker circle:hover{
+    stroke-width: 3;
+    stroke: white;
 }
 div.tooltip {	
     position: absolute;					
-	width : 250px;
-	height : 320px;				
+	width : 300px;
+	height : 325px;				
     padding: 2px;				
     font: 12px sans-serif;		
     background: white;	
@@ -37,17 +45,13 @@ div.tooltip {
     pointer-events: none;			
 }
 
-#tooltip_area{
-/*<<<<<<< HEAD*/
+.tooltip_area{
 	align-content:center; 
-/*=======*/
-/*	align:center; */
-/*>>>>>>> e1be11ec3a0735e5cfb9a935385408e1574edf26*/
 	background-color:aliceblue;
 	height : 100%;
 	width : 100%;
 }
-#tooltip_header{
+.tooltip_header{
 	text-align:center;
 	background-color:#48b5e9;
     color: white;
@@ -57,12 +61,42 @@ div.tooltip {
 	font-size:14px;
 	font-weight: bold;
 }
-#tooltip_inner_area{
-	align:center; 
-	background-color:aliceblue;
-	padding-left: 10px;
-	top: -5px;
+.tooltip_inner_area{
+	background-color:white;
 }
+
+.tooltip-address{
+    padding-left: 10px;
+    float: left;
+    width: 110px;
+}
+
+.tooltip-address p{
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.tooltip-image{
+    padding-left: 5px;
+    float: left;
+    width: 60px;
+}
+.tooltip-image img{
+    width: 50px;
+    height: 50px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.tooltip-violation{
+    float: right;
+    width: 110px;
+}
+.tooltip-violation p{
+    font-size: 11px;
+    font-weight: bold;
+}
+
 path { 
 	stroke: red;
 	stroke-width: 2;
@@ -90,7 +124,7 @@ path {
 	stroke : #ccc;
 }
 circle{
-	fill: red;			
+	fill: red;
 }
 
 #iw-container {
