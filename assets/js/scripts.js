@@ -1,288 +1,4 @@
-var darkMapStyle = [
-  {
-    "featureType": "administrative",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#444444"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.locality",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.neighborhood",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.province",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.man_made",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "lightness": -35
-      },
-      {
-        "gamma": 3.16
-      },
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural.landcover",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "hue": "#ff0000"
-      },
-      {
-        "saturation": 15
-      },
-      {
-        "lightness": 90
-      },
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.attraction",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "stylers": [
-      {
-        "saturation": -100
-      },
-      {
-        "lightness": 45
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "hue": "#ff0000"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "lightness": "83"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "stylers": [
-      {
-        "visibility": "simplified"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "lightness": 100
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station.airport",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station.bus",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "stylers": [
-      {
-        "color": "#24282b"
-      },
-      {
-        "lightness": -45
-      },
-      {
-        "visibility": "on"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "saturation": "-70"
-      },
-      {
-        "lightness": "27"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  }
-];
-        
+    
 //Map Viz
 var map;
 var layer;
@@ -379,7 +95,7 @@ function addListeners(){
     });
 }
 function initializeMap(){
-    map = L.map('map').setView([40.7430, -74.0016], 14);
+    map = L.map('map').setView([40.628776, -73.971701], 12);
 
     L.tileLayer(mapboxLayout, {
         tileSize: 512,
@@ -396,28 +112,49 @@ function initializeMap(){
     g = svg.append("g");
     
     addListeners();
-
 }
 
+// Changed Function
 function filterData(data, data_year){
     filtered_data = null;
     console.log("Performing Filter");
     filtered_data = data.filter(function(d){
-        return d['INSPECTION DATE'] != undefined && dateformat.parse(d['INSPECTION DATE']).getFullYear() === data_year;
+        // Changes here
+        return d['INSPECTION DATE'] != undefined && dateformat.parse(d['INSPECTION DATE']).getFullYear() === data_year && d['GRADE'] != undefined && d['GRADE'] != "" && d['SCORE'] != '';
     });
 
     var sorted_data = d3.nest()
                         .key(function(d){ return d['CAMIS']; })
                         .entries(filtered_data);
-
+    
     sorted_data.sort(function(a,b){
-        return d3.ascending(a.values.length, b.values.length);
+        return d3.ascending(b.values.length, a.values.length);
     });
-
+    
     filtered_data = sorted_data;
     console.log("Filteration is Done!");
-    console.log(filtered_data.length);
 }
+
+//function filterData(data, data_year){
+//    filtered_data = null;
+//    console.log("Performing Filter");
+//    filtered_data = data.filter(function(d){
+//        return d['INSPECTION DATE'] != undefined && dateformat.parse(d['INSPECTION DATE']).getFullYear() === data_year;
+//    });
+//
+//    var sorted_data = d3.nest()
+//                        .key(function(d){ return d['CAMIS']; })
+//                        .entries(filtered_data);
+//    console.log(sorted_data);
+//    sorted_data.sort(function(a,b){
+//        return d3.ascending(b.values.length, a.values.length);
+//    });
+//    
+//    
+//    filtered_data = sorted_data;
+//    console.log("Filteration is Done!");
+//    console.log(filtered_data.length);
+//}
 
 function filterByGrade(data, gradeString){
     console.log(data);
@@ -502,26 +239,20 @@ function tooltipData(camis, restaurant_data){
 				+"</div></div>";
 	return innerHTML;
 }
-      
-function getGrade(d){
-    var grade = "";
-    var maxScore = 0;
-    for(var i=0; i<d.values.length;i++){
-        //if(d.values[i]["GRADE"] != "" && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year){
-        //    grade = d.values[i]["GRADE"];
-        //}
-        if(d.values[i]['SCORE'] > maxScore){
-		maxScore = d.values[i]['SCORE'];
-	}
-	if(maxScore <= 13 ){
-		grade = 'A';	
-	}else if(maxScore <= 27 ){
-		grade = 'B';	
-	}else{
-		grade = 'C';
-	}
-    }    
 
+// Changed Function
+function getGrade(d){
+    var grade = "Z";
+    var maxScore = 0;
+    var month = 0;
+    for(var i=0; i<d.values.length;i++){
+        // Added a few more conditions here for grade with latest date
+        if(d.values[i]['GRADE'] != '' && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year && dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth() >= month && grade > d.values[i]['GRADE']){
+            month = dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth();
+            grade = d.values[i]['GRADE'];    
+        }
+    }
+    
     if(grade === "A"){
         return {color:"#214099", src:"assets/img/A.png"};
     }
@@ -535,6 +266,42 @@ function getGrade(d){
         return {color:"#A1A1A1", src:"assets/img/N.png"};
     }
 }
+      
+//function getGrade(d){
+//    var grade = "";
+//    var maxScore = 0;
+//    for(var i=0; i<d.values.length;i++){
+//        //if(d.values[i]["GRADE"] != "" && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year){
+//        //    grade = d.values[i]["GRADE"];
+//        //}
+//        if(d.values[i]['SCORE'] > maxScore){
+//		  maxScore = d.values[i]['SCORE'];
+//        }
+//	
+//        if(maxScore <= 13 ){
+//            grade = 'A';	
+//        }
+//        else if(maxScore <= 27 ){
+//            grade = 'B';	
+//        }
+//        else{
+//            grade = 'C';
+//        }
+//    }
+//    
+//    if(grade === "A"){
+//        return {color:"#214099", src:"assets/img/A.png"};
+//    }
+//    else if(grade === "B"){
+//        return {color:"#03A45E", src:"assets/img/B.png"};
+//    }
+//    else if(grade === "C"){
+//        return {color:"#F8A51B", src:"assets/img/C.png"};
+//    }
+//    else{
+//        return {color:"#A1A1A1", src:"assets/img/N.png"};
+//    }
+//}
 
 function plotLineChart(camis){
 	var margin = {top: 10, right: 40, bottom: 15, left: 5},
@@ -591,14 +358,230 @@ function plotLineChart(camis){
 			.attr("r", 1.5)
 			.attr("cx", function(d) { return x(d.key); })
 			.attr("cy", function(d) { return y(d.values); });
-	
 
 }
 
+//--------------------HEATMAP-----------------------------------------
+var TEMPERATURE = 'Food Temp.';
+var CONTAMINATION = 'Unclean Food';
+var HYGIENE = 'Staff Hygiene';
+var FACILITY = 'Facility/Storage';
+var REGULATION = 'Regulation';
+var VERMIN = 'Vermin';
+
+function convertViolation(input){
+            
+            if (input.startsWith('02')) {
+                return VERMIN;
+            }
+            else if(input.startsWith('03')) {
+                return CONTAMINATION;
+            }
+            else if(input.startsWith('04A')){
+                return REGULATION;
+            }
+            else if(input.startsWith('04B') || input.startsWith('04C') || input.startsWith('04D')) {
+                return HYGIENE;
+            }
+            else if(input.startsWith('04E') || input.startsWith('04F')) {
+                return FACILITY;
+            }
+            else if(input.startsWith('04G') || input.startsWith('04H') || input.startsWith('04I')) {
+                return CONTAMINATION;
+            }
+            else if(input.startsWith('04J')) {
+                return TEMPERATURE;
+            }
+            else if(input.startsWith('04')) {
+                return VERMIN;
+            }
+            else if(input.startsWith('05')) {
+                return FACILITY;
+            }
+            else if(input.startsWith('06A') || input.startsWith('06B')) {
+                return HYGIENE;
+            }
+            else if(input.startsWith('06C')) {
+                return CONTAMINATION;
+            }
+            else if(input.startsWith('06D') || input.startsWith('06E') || input.startsWith('06F')) {
+                return FACILITY;
+            }
+            else if(input.startsWith('06')) {
+                return REGULATION;
+            }
+            else if(input.startsWith('07')) {
+                return REGULATION;
+            }
+            else if(input.startsWith('08')) {
+                return FACILITY;
+            }
+            else if(input.startsWith('09A')) {
+                return FACILITY;
+            }
+            else if(input.startsWith('09B')) {
+                return TEMPERATURE;
+            }
+            else if(input.startsWith('09C')) {
+                return CONTAMINATION;
+            }
+            else if(input.startsWith('10')) {
+                return FACILITY;
+            }
+            else if(input.startsWith('15')) {
+                return REGULATION;
+            }
+            else if(input.startsWith('16')) {
+                return REGULATION;
+            }
+            else if(input.startsWith('18')) {
+                return REGULATION;
+            }
+            else if(input.startsWith('20')) {
+                return REGULATION;
+            }
+            else if(input.startsWith('22')) {
+                return REGULATION;
+            }
+            return 'Other';
+        }
+        
+function condenseCuisine(input) {
+            if (input.startsWith('Latin')){
+                return 'Latin';
+            }
+            else if(input.startsWith('Caf')) {
+                return 'Cafe/Coffee/Tea';
+            }
+            else if(input.startsWith('Italian') || input.startsWith('Pizza')) {
+                return 'Italian';
+            }
+            return input;
+        }
+
+function heatMap(data) {
+    var filteredData = [];
+    for( var entry in data) {
+        filteredData.push(data[entry].values[0]);
+    }
+    var condensedData = [];
+    var maxCount = 0;
+    for( var entry in filteredData ) {
+        newEntry = {
+            cuisine : condenseCuisine(filteredData[entry]["CUISINE DESCRIPTION"]),
+            violation : convertViolation(filteredData[entry]["VIOLATION CODE"]),
+            DBA : filteredData[entry].DBA
+        };
+        condensedData.push(newEntry);
+    }
+    var topCuisines = d3.nest()
+        .key(function(d) {return d.cuisine;})
+        .rollup(function(v) {return v.length;})
+        .entries(condensedData);
+    topCuisines = topCuisines.sort(
+        function compare(a, b) {
+            if (a.values < b.values) {
+                return 1;
+            }
+            else if (a.values > b.values) {
+                return -1;
+            }
+            return 0;
+        }
+    );
+    topCuisines = topCuisines.slice(0, 9);
+    var topNCuisines = [];
+    for (var entry in topCuisines) {
+        topNCuisines.push(topCuisines[entry].key);
+    }
+    var countedData = d3.nest()
+        .key(function(d) { if (topNCuisines.indexOf(d.cuisine) > -1) {return d.cuisine;} return 'Other'; })
+        .key(function(d) { return d.violation; })
+        .rollup(function(v) { return v.length; })
+        .map(condensedData);
+    var formattedData = [];
+    var toCounts = {};
+    for( var cuisine in countedData) {
+        toCounts[cuisine] = 0;
+        for( var violation in countedData[cuisine]) {
+            toCounts[cuisine] += countedData[cuisine][violation];
+        }
+    }
+    for( var cuisine in countedData ) {
+        for( var violation in countedData[cuisine]) {
+            var entry = {};
+            entry.cuisine = cuisine;
+            entry.violation = violation;
+            entry.count = countedData[cuisine][violation] / toCounts[cuisine];
+            formattedData.push(entry);
+            if (entry.count > maxCount) {
+                maxCount = entry.count;
+            }
+        }
+    }
+    //renderList(filteredData);
+    renderChart(formattedData, maxCount);
+}
+
+function renderChart(data, maxCount) {
+    console.log("rendering heatmap!");
+    var chartWidth = 600;
+    var chartHeight = 400;
+    var chartMargin = {top: 10, left: 90, right: 10, bottom: 90};
+    var chartInnerHeight = chartHeight - chartMargin.top - chartMargin.bottom;
+    var chartInnerWidth = chartWidth - chartMargin.left - chartMargin.right;
+
+    var squareSize = 20;
+
+    var chart = d3.select("#Heatmap");
+    var xAxisGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + (chartInnerHeight + chartMargin.top) + ")");
+    var yAxisGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + chartMargin.top + ")");
+    var dotGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + chartMargin.top + ")");
+    console.log(data);
+    console.log(maxCount);
+    chart
+        .attr("width", chartWidth)
+        .attr("height", chartHeight);
+    var xScale = d3
+        .scale.ordinal()
+        .rangeBands([0, chartInnerWidth]);
+    var yScale = d3
+        .scale.ordinal()
+        .rangeBands([chartInnerHeight, 0]);
+    var cScale = d3.scale.linear().domain([0, maxCount]).range(["white", "red"]);
+
+    var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(-300);
+    var yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(-500);
+    xScale.domain(data.map(function(d) { return d.cuisine; })); 
+    yScale.domain(data.map(function(d) { return d.violation; })); 
+    xAxisGroup.call(xAxis)
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)" );
+    yAxisGroup.call(yAxis);
+    dotGroup
+        .selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("height", function(d) {return yScale.rangeBand(d.violation)})
+        .attr("width", function(d) {return xScale.rangeBand(d.cuisine)})
+        .attr("x", 
+              function(d) { return xScale(d.cuisine) })
+        .attr("y", 
+              function(d) { return yScale(d.violation) })
+        .attr("fill", function(d, i) {return cScale(d.count)})
+        .on("mouseover",function(){});  // Something for mouseover
+}
+
+//--------------------------------------------------------------------
+
 d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/assets/data/BK5200.csv", function(error, data){
     all_data = data;
-    
     initializeMap();
     filterData(all_data, year);
     renderD3(filtered_data);
+    heatMap(filtered_data);
 });
