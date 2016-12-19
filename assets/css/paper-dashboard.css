@@ -1,20 +1,25 @@
+
 rect {
     opacity: 1
 }
+rect:hover{
+    stroke-width: 2px;
+    stroke: "black";
+}
 .fa-circle.gradeA{
-    color: #214099;
+    color: #1565C0;
 }
 
 .fa-circle.gradeB{
-    color: #03A45E;
+    color: #00CC99;
 }
 
 .fa-circle.gradeC{
-    color: #F8A51B;
+    color: #FDD835;
 }
 
 .fa-circle.gradeP{
-    color: #A1A1A1;
+    color: #455A64;
 }
 
 #map-legend{
@@ -47,7 +52,7 @@ div.tooltip {
 
 .tooltip_area{
 	align-content:center; 
-	background-color:aliceblue;
+	background-color:white;
 	height : 100%;
 	width : 100%;
 }

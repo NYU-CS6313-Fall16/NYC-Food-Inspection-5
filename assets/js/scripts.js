@@ -288,6 +288,7 @@ function filterAllSelections(){
     else if(selectedGrades === "" && selectedCuisines !== "" && selectedViolations === ""){
         console.log("Only Cuisines Selected")
         setSelectedCuisines(selectedCuisines);
+        heatMap(filtered_data, selectedCuisines);
     }
     else if(selectedGrades === "" && selectedCuisines === "" && selectedViolations !== ""){
         console.log("Only Violations Selected");
@@ -302,6 +303,7 @@ function filterAllSelections(){
         });
         
         renderD3(masterFilteredData);
+        heatMap(filtered_data, selectedCuisines);
     }
     else if(selectedGrades === "" && selectedCuisines !== "" && selectedViolations !== ""){
         console.log("Cuisines and Violations Selected");
@@ -319,6 +321,7 @@ function filterAllSelections(){
         });
         
         renderD3(masterFilteredData);
+        heatMap(filtered_data, selectedCuisines);
     }
     else if(selectedGrades !== "" && selectedCuisines === "" && selectedViolations !== ""){
         console.log("Grades and Violations Selected");
@@ -354,6 +357,7 @@ function filterAllSelections(){
         });
         
         renderD3(masterFilteredData);
+        heatMap(filtered_data, selectedCuisines);
     }
 }
 
@@ -480,7 +484,7 @@ var VERMIN = 'Vermin';
 
 function heatMapTooltipData(violation, cuisine){
 
-	var innerHTML = "<div class='tooltip_area'><div class='tooltip_header'>"+cuisine+' vs '+violation+"</div><br/>";
+	var innerHTML = "<div class='tooltip_area' id='heattooltip'><div class='tooltip_header' >"+cuisine+' vs '+violation+"</div><br/>";
 
     innerHTML = innerHTML +"<div class='tooltip_inner_area'></div></div>";
     
@@ -503,7 +507,6 @@ function heatMapPlotLineChart(violation, cuisine){
 			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
 			.rollup(function(leaves) { return leaves.length })
 		.entries(violationData);
-    console.log(vals);
 
 	var x = d3.scale.linear().range([0, width]);
 	var y = d3.scale.linear().range([height, 0]);
@@ -550,7 +553,7 @@ function heatMapPlotLineChart(violation, cuisine){
 			.attr("r", 2.5)
 			.attr("cx", function(d) { return x(d.key); })
 			.attr("cy", function(d) { return y(+d.values); });
-    console.log(plot_svg);
+
 }
 
 function convertViolation(input){
@@ -675,8 +678,19 @@ function heatMap(data) {
             return 0;
         }
     );
-    topCuisines = topCuisines.slice(0, 9);
+    
     var topNCuisines = [];
+    
+    if(selectedCuisines != ""){
+        for(var entry in topCuisines){
+            if(selectedCuisines.includes(getShortCuisine(topCuisines[entry].key))){
+                topNCuisines.push(topCuisines[entry].key);    
+            }
+        }
+    }
+    
+    topCuisines = topCuisines.slice(0, 9-topNCuisines.length);
+    
     for (var entry in topCuisines) {
         topNCuisines.push(topCuisines[entry].key);
     }
@@ -707,7 +721,6 @@ function heatMap(data) {
             }
         }
     }
-    //renderList(filteredData);
     renderChart(formattedData, maxCount);
 }
 
@@ -720,7 +733,8 @@ function renderChart(data, maxCount) {
     var chartInnerWidth = chartWidth - chartMargin.left - chartMargin.right;
 
     var squareSize = 20;
-
+    
+    d3.select('#Heatmap').selectAll("*").remove();
     var chart = d3.select("#Heatmap");
     var xAxisGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + (chartInnerHeight + chartMargin.top) + ")");
     var yAxisGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + chartMargin.top + ")");
@@ -753,6 +767,7 @@ function renderChart(data, maxCount) {
         .data(data)
         .enter()
         .append("rect")
+        .text(function(d){return d.cuisine+d.violation;})
         .attr("height", function(d) {return yScale.rangeBand(d.violation)})
         .attr("width", function(d) {return xScale.rangeBand(d.cuisine)})
         .attr("x", 
@@ -760,12 +775,26 @@ function renderChart(data, maxCount) {
         .attr("y", 
               function(d) { return yScale(d.violation) })
         .attr("fill", function(d, i) {return cScale(d.count)})
-        .on("mouseover",function(d,i){console.log(d.actual+" from "+d.total)
-            div.html(heatMapTooltipData(d.violation,d.cuisine));
-            div.transition()		
+        .on("mouseover",function(d,i){
+                    var selection = d.cuisine+d.violation;
+                    dotGroup.selectAll("rect")
+                        .style("stroke", function(d, i){
+                            return d.cuisine+d.violation == selection ? "#525354" : undefined
+                        })
+                        .style("stroke-width",1);
+            
+                    div.html(heatMapTooltipData(d.violation,d.cuisine));
+                    div.transition()		
                         .duration(100)
-                        .style("opacity", 1)	
-                        .style("left", (d3.event.pageX) + "px")		
+                        .style("opacity", 1)
+                        .style("left", function(){
+                            if(d3.event.pageX > 800){
+                                return d3.event.pageX-300+"px";
+                            }
+                            else{
+                                return d3.event.pageX+"px";
+                            }
+                        })
                         .style("top",function(){
                             if(d3.event.pageY+150 > 580){
                                 return d3.event.pageY-320+"px";
@@ -775,8 +804,10 @@ function renderChart(data, maxCount) {
                             }
                         });	
             heatMapPlotLineChart(d.violation,d.cuisine);}
-        ).on("mouseout", function() {		
-                    div.transition()		
+        ).on("mouseout", function() {
+                dotGroup.selectAll("rect").style("stroke",undefined);
+                    
+                div.transition()		
                         .duration(500)		
                         .style("opacity", 0);	
                 });  // Something for mouseover
@@ -802,26 +833,23 @@ function getGrade(d){
     var imgSrc = "";
     
     if(grade === 'A'){
-        gradeColor = "#214099";
+        gradeColor = "#1565C0";
         imgSrc = "assets/img/A.png";
     }
     else if(grade === 'B'){
-        gradeColor = "#03A45E";
+        gradeColor = "#00CC99";
         imgSrc = "assets/img/B.png";
     }
     else if(grade === 'C'){
-        gradeColor = "#F8A51B";
+        gradeColor = "#FDD835";
         imgSrc = "assets/img/C.png";
     }
     else{
         grade = 'P';
-        gradeColor = "#A1A1A1"
+        gradeColor = "#455A64"
         imgSrc = "assets/img/N.png";
     }
     
-    if(d.values[0]['CAMIS'] === '41485393'){
-//        console.log("Final Grade: "+grade+" and setting color as "+gradeColor);
-    }
     return {color: gradeColor, src: imgSrc, mon: month, grade: grade};
 }
 
@@ -858,9 +886,20 @@ function renderD3(data){
     
     feature.enter().append("circle")
                 .attr("class","marker")
-                .style("opacity", .8) 
-                .attr("r", 3)
+                .style("opacity", .8)
+                .text(function(d){return d.values[0]['CAMIS']})
+                .attr("r", 4)
                 .on("mouseover", function(d) {
+                    var id = d.values[0]['CAMIS'];
+                    g.selectAll("circle")
+                        .style("stroke", function(d, i){
+                            return d.values[0]['CAMIS'] == id ? "black" : undefined;
+                        })
+                        .attr("r", function(d, i){
+                            return d.values[0]['CAMIS'] == id ? 5 : 3;
+                        })
+                        .style("stroke-width",2);
+                    
                     var window_content = tooltipData(d.values[0]["CAMIS"],d);
                     div.html(window_content);
                     plotLineChart(d.values[0]["CAMIS"],d);
@@ -877,28 +916,19 @@ function renderD3(data){
                             }
                         });	
                 })
-                .on("mouseout", function() {		
+                .on("mouseout", function() {	
+        
+                    g.selectAll("circle")
+                        .style("stroke", undefined)
+                        .attr("r", 3)
+                        .style("stroke-width",0.5);
+        
                     div.transition()		
                         .duration(500)		
                         .style("opacity", 0);	
                 })
                 .style("fill", function(d){
-                    var grade = getGrade(d)['grade'];
-                    if(d.values[0]['CAMIS'] === '41485393'){
-                        console.log("Final Grade in render: "+grade);
-                    }
-                    if(grade == 'A'){
-                        return "#214099";
-                    }
-                    else if(grade == 'B'){
-                        return "#03A45E";
-                    }
-                    else if(grade == 'C'){
-                        return "#F8A51B";
-                    }
-                    else{
-                        return "#A1A1A1"
-                    }
+                        return getGrade(d)['color'];
                 });
                 
     
@@ -927,7 +957,7 @@ d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-
     initializeMap();
     filterData(all_data, year);
     renderD3(filtered_data);
-    heatMap(filtered_data);
+    heatMap(filtered_data, "");
 });
 
 
