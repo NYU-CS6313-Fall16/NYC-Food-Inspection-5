@@ -157,7 +157,6 @@ function filterData(data, data_year){
 //}
 
 function filterByGrade(data, gradeString){
-    console.log(data);
     filtered_data = null;
     console.log("Performing filter by grade:");
     if(gradeString === ""){
@@ -188,7 +187,7 @@ function renderD3(data){
                 .on("mouseover", function(d) {	
                     var window_content = tooltipData(d.values[0]["CAMIS"],d);
                     div.html(window_content);
-                    plotLineChart(d.values[0]["CAMIS"]);
+                    plotLineChart(d.values[0]["CAMIS"],d);
                     div.transition()		
                         .duration(200)
                         .style("opacity", .9)	
@@ -247,23 +246,24 @@ function getGrade(d){
     var month = 0;
     for(var i=0; i<d.values.length;i++){
         // Added a few more conditions here for grade with latest date
-        if(d.values[i]['GRADE'] != '' && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year && dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth() >= month && grade > d.values[i]['GRADE']){
+        if(d.values[i]['GRADE'] != '' && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year 
+		&& dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth() >= month && grade > d.values[i]['GRADE']){
             month = dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth();
             grade = d.values[i]['GRADE'];    
         }
     }
     
     if(grade === "A"){
-        return {color:"#214099", src:"assets/img/A.png"};
+        return {color:"#214099", src:"assets/img/A.png", mon:month};
     }
     else if(grade === "B"){
-        return {color:"#03A45E", src:"assets/img/B.png"};
+        return {color:"#03A45E", src:"assets/img/B.png", mon:month};
     }
     else if(grade === "C"){
-        return {color:"#F8A51B", src:"assets/img/C.png"};
+        return {color:"#F8A51B", src:"assets/img/C.png", mon:month};
     }
     else{
-        return {color:"#A1A1A1", src:"assets/img/N.png"};
+        return {color:"#A1A1A1", src:"assets/img/N.png", mon:month};
     }
 }
       
@@ -303,7 +303,10 @@ function getGrade(d){
 //    }
 //}
 
-function plotLineChart(camis){
+
+
+
+function plotLineChart(camis,restaurant_data){
 	var margin = {top: 10, right: 40, bottom: 15, left: 5},
 			width = 200 - margin.left - margin.right,
 			height = 200 - margin.top - margin.bottom;
@@ -312,8 +315,22 @@ function plotLineChart(camis){
 	allData = all_data.filter(function(d){ return d['CAMIS']==camis});
 	vals = d3.nest()
 			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
-		.rollup(function(leaves) { return d3.max(leaves,function(d){return d['SCORE'];}); })
+			//.rollup(function(leaves) { return d3.max(leaves,function(d){return d['SCORE'];}); })
 		.entries(allData);
+
+	// wrote custom rollup code since d3 rollup function was driving me nuts..
+	var rolled = []; 
+	for(var i=0; i<vals.length; i++){
+		var month = 0;
+		var scores = [];
+		for(j=0;j<vals[i].values.length;j++){
+			if(dateformat.parse(vals[i].values[j]['INSPECTION DATE']).getMonth() >= month){
+            			month = dateformat.parse(vals[i].values[j]['INSPECTION DATE']).getMonth();
+            			scores.push(vals[i].values[j]['SCORE']) ;
+        		}
+		}
+		rolled.push({key:vals[i].key, values:d3.max(scores)});
+	}
 
 	var x = d3.scale.linear().range([0, width]);
 	var y = d3.scale.linear().range([height, 0]);
@@ -347,17 +364,17 @@ function plotLineChart(camis){
 		
 	var valueline = d3.svg.line()
 		.x(function(d) {   return x(d.key);})
-		.y(function(d) { return y(d.values); });
+		.y(function(d) { return y(+d.values); });
 	
 	plot_svg.append("path")
-		.attr("d", valueline(vals));
+		.attr("d", valueline(rolled));
 
 	plot_svg.selectAll("dot")
-			.data(vals)
+			.data(rolled)
 			.enter().append("circle")
 			.attr("r", 1.5)
 			.attr("cx", function(d) { return x(d.key); })
-			.attr("cy", function(d) { return y(d.values); });
+			.attr("cy", function(d) { return y(+d.values); });
 
 }
 
@@ -537,8 +554,7 @@ function renderChart(data, maxCount) {
     var xAxisGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + (chartInnerHeight + chartMargin.top) + ")");
     var yAxisGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + chartMargin.top + ")");
     var dotGroup = chart.append("g").attr("transform", "translate(" + chartMargin.left + "," + chartMargin.top + ")");
-    console.log(data);
-    console.log(maxCount);
+
     chart
         .attr("width", chartWidth)
         .attr("height", chartHeight);
