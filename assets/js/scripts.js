@@ -111,8 +111,6 @@ function initializeMap(){
     svg = d3.select("#map").select("svg"),
     g = svg.append("g");
     
-    populateCuisine();
-    addListeners();
     var legendContent = "<i class='fa fa-circle gradeA'></i> Grade A"+
                                     "<i class='fa fa-circle gradeB'></i> Grade B" +
                                     "<i class='fa fa-circle gradeC'></i> Grade C" +
@@ -158,15 +156,6 @@ function populateCuisine(){
 //-------------Filter Data Based on Grade Selection----------------------
 
 function displayByGrade(gradeSelection){
-        
-    // Add Legend
-    $('#map-legend').html('');
-    var legendContent = "<i class='fa fa-circle gradeA'></i> Grade A"+
-                                    "<i class='fa fa-circle gradeB'></i> Grade B" +
-                                    "<i class='fa fa-circle gradeC'></i> Grade C" +
-                                    "<i class='fa fa-circle gradeP'></i> Grade Pending";
-    
-    $('#map-legend').html(legendContent);
     
     // Create a Grade Selection String which contains all selected grades.
 //    selectedGrades = "";
@@ -196,11 +185,11 @@ function filterByGrade(data, gradeString){
         return data;
     }
     
-    gradeFilteredData = data.filter(function(d){
+    var gfd = data.filter(function(d){
         return gradeString.includes(getGrade(d)["grade"]);
     });
     
-    return gradeFilteredData;
+    return gfd;
 }
 
 //-------------Filter Data Based on Cuisine Selection----------------------
@@ -269,10 +258,9 @@ function setSelectedViolations(){
 
 //-------------Master Filter FUnction--------------------------------------
 function filterAllSelections(){
-    
-//    console.log("Cuisine: "+selectedCuisines);
-//    console.log("Grades: "+selectedGrades);
-//    console.log("Violations: "+selectedViolations);
+        
+    g.remove('circle');
+    g = svg.append("g");
     
     var gradeSelection = selectedGrades;
     selectedGrades = "";
@@ -374,8 +362,11 @@ function filterAllSelections(){
 //--------------------Tooltip and Line Chart--------------------------
 
 function tooltipData(camis, restaurant_data){
-	var restaurant_allData = all_data.filter(function(d){ return d['CAMIS']==camis});
+	var restaurant_allData = all_data.filter(function(d){ 
+        
+        return d['CAMIS']==camis});
 	var currentYear = restaurant_allData.filter(function(d){ return dateformat.parse(d['INSPECTION DATE']).getFullYear() == year });
+    console.log("In tooltip: "+camis);
 	var grade = '';	
 	var violation = 0;
 	var critical = 0;
@@ -402,12 +393,14 @@ function tooltipData(camis, restaurant_data){
 }
 
 function plotLineChart(camis,restaurant_data){
+    console.log("In Line Chart Plot: "+camis);
 	var margin = {top: 10, right: 40, bottom: 15, left: 5},
 			width = 250 - margin.left - margin.right,
 			height = 200 - margin.top - margin.bottom;
 	var parseDate = d3.time.format("%m/%d/%y").parse;
 
 	allData = all_data.filter(function(d){ return d['CAMIS']==camis});
+    console.log("Check In Plot: "+allData[0]);
 	vals = d3.nest()
 			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
 			//.rollup(function(leaves) { return d3.max(leaves,function(d){return d['SCORE'];}); })
@@ -437,6 +430,7 @@ function plotLineChart(camis,restaurant_data){
 		.orient("left").ticks(10).tickSize("-205");
 		//.orient("left").ticks(d3.max(vals, function(d){return d.values})).tickSize("-155");
 
+    
 	var plot_svg = d3.select(".tooltip_area")
 				.append("svg")
 					.attr("width", width + margin.left + margin.right+ 25)
@@ -444,6 +438,7 @@ function plotLineChart(camis,restaurant_data){
 					.style("padding-left","50px")
 					.append("g")
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+   
 	x.domain([2013, 2017]);
 	//y.domain([0, d3.max(vals, function(d) { console.log(d);return d.values; })]);
 	y.domain([0, 80]);
@@ -470,7 +465,7 @@ function plotLineChart(camis,restaurant_data){
 			.attr("r", 2.5)
 			.attr("cx", function(d) { return x(d.key); })
 			.attr("cy", function(d) { return y(+d.values); });
-
+    console.log(plot_svg);
 }
 
 //--------------------------------------------------------------------
@@ -663,7 +658,7 @@ function renderChart(data, maxCount) {
     var yScale = d3
         .scale.ordinal()
         .rangeBands([chartInnerHeight, 0]);
-    var cScale = d3.scale.linear().domain([0, maxCount]).range(["white", "red"]);
+    var cScale = d3.scale.linear().domain([0, 1]).range(["white", "red"]);
 
     var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(-300);
     var yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(-500);
@@ -701,7 +696,7 @@ function getGrade(d){
     var month = 0;
     for(var i=0; i<d.values.length;i++){
         if(d.values[i]['GRADE'] != '' && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year 
-		&& dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth() >= month && grade > d.values[i]['GRADE']){
+		&& dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth() >= month && grade >= d.values[i]['GRADE']){
             month = dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth();
             grade = d.values[i]['GRADE'];    
         }
@@ -710,15 +705,15 @@ function getGrade(d){
     var gradeColor = "";
     var imgSrc = "";
     
-    if(grade == 'A'){
+    if(grade === 'A'){
         gradeColor = "#214099";
         imgSrc = "assets/img/A.png";
     }
-    else if(grade == 'B'){
+    else if(grade === 'B'){
         gradeColor = "#03A45E";
         imgSrc = "assets/img/B.png";
     }
-    else if(grade == 'C'){
+    else if(grade === 'C'){
         gradeColor = "#F8A51B";
         imgSrc = "assets/img/C.png";
     }
@@ -726,6 +721,10 @@ function getGrade(d){
         grade = 'P';
         gradeColor = "#A1A1A1"
         imgSrc = "assets/img/N.png";
+    }
+    
+    if(d.values[0]['CAMIS'] === '41485393'){
+//        console.log("Final Grade: "+grade+" and setting color as "+gradeColor);
     }
     return {color: gradeColor, src: imgSrc, mon: month, grade: grade};
 }
@@ -774,12 +773,13 @@ function renderD3(data){
                         .style("opacity", 1)	
                         .style("left", (d3.event.pageX) + "px")		
                         .style("top",function(){
-                            if(d3.event.pageY+150 > 580){
-                                return d3.event.pageY-320+"px";
-                            }
-                            else{
-                                return d3.event.pageY+"px"
-                            }
+//                            if(d3.event.pageY+150 > 580){
+//                                return d3.event.pageY-320+"px";
+//                            }
+//                            else{
+//                                return d3.event.pageY+"px"
+//                            }
+                            return d3.event.pageY+"px";
                         });	
                 })
                 .on("mouseout", function() {		
@@ -788,7 +788,22 @@ function renderD3(data){
                         .style("opacity", 0);	
                 })
                 .style("fill", function(d){
-                    return getGrade(d)['color'];
+                    var grade = getGrade(d)['grade'];
+                    if(d.values[0]['CAMIS'] === '41485393'){
+                        console.log("Final Grade in render: "+grade);
+                    }
+                    if(grade == 'A'){
+                        return "#214099";
+                    }
+                    else if(grade == 'B'){
+                        return "#03A45E";
+                    }
+                    else if(grade == 'C'){
+                        return "#F8A51B";
+                    }
+                    else{
+                        return "#A1A1A1"
+                    }
                 });
                 
     
@@ -796,7 +811,7 @@ function renderD3(data){
 
     map.on("viewreset", update);
     update();
-
+    
     function update() {
         feature.attr("transform", function(d) { 
                         return "translate("+ 
@@ -811,6 +826,8 @@ function renderD3(data){
 //--------------------Initial Data Load and Render--------------------
 //https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/
 d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/master/assets/data/BK5200.csv", function(error, data){
+    populateCuisine();
+    addListeners();
     all_data = data;
     initializeMap();
     filterData(all_data, year);
