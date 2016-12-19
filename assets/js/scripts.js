@@ -205,9 +205,17 @@ function filterByGrade(data, gradeString){
 
 //-------------Filter Data Based on Cuisine Selection----------------------
 
+<<<<<<< HEAD
 function getShortCuisine(inputCuisine){
     if(inputCuisine.includes('Cafe')||inputCuisine.includes('Tea')){
         return 'Cafe';
+=======
+function filterByGrade(data, gradeString){
+    filtered_data = null;
+    console.log("Performing filter by grade:");
+    if(gradeString === ""){
+        filterData(all_data,year);    
+>>>>>>> origin/master
     }
     if(inputCuisine.includes('Latin')){
         return 'Latin';
@@ -243,9 +251,35 @@ function filterByCuisine(data, cuisineString){
         return data;
     }
     
+<<<<<<< HEAD
     var cuisineData = data.filter(function(d){
         return cuisineString.includes(getShortCuisine(d.values[0]['CUISINE DESCRIPTION']));
     });
+=======
+    var feature = g.selectAll("circle")
+                    .data(data);
+    feature.enter().append("circle")
+                .attr("class","marker")
+                .style("opacity", .8) 
+                .style("fill", function(d){return getGrade(d)["color"]})
+                .attr("r", 3)
+                .on("click", function(){ console.log("clicked");})
+                .on("mouseover", function(d) {	
+                    var window_content = tooltipData(d.values[0]["CAMIS"],d);
+                    div.html(window_content);
+                    plotLineChart(d.values[0]["CAMIS"],d);
+                    div.transition()		
+                        .duration(200)
+                        .style("opacity", .9)	
+                        .style("left", (d3.event.pageX) + "px")		
+                        .style("top", (d3.event.pageY - 28) + "px");	
+                })
+                .on("mouseout", function() {		
+                    div.transition()		
+                        .duration(500)		
+                        .style("opacity", 0);	
+                }); 
+>>>>>>> origin/master
     
     return cuisineData;
 }
@@ -348,6 +382,7 @@ function tooltipData(camis, restaurant_data){
     
 	var innerHTML = "<div class='tooltip_area'><div class='tooltip_header'>"+currentYear[0]['DBA']+"</div><br/>";
 
+<<<<<<< HEAD
     innerHTML = innerHTML +"<div class='tooltip_inner_area'>"
                 + "<div class='tooltip-address'><p>"+getShortCuisine(currentYear[0]['CUISINE DESCRIPTION']).toUpperCase()+"<br>"+address+"</p></div>"
 				+"<div class='tooltip-image'><img src='"+getGrade(restaurant_data)['src']+"'></img></div>"
@@ -355,8 +390,42 @@ function tooltipData(camis, restaurant_data){
 				+"</div></div>";
     
 	return innerHTML;
+=======
+// Changed Function
+function getGrade(d){
+    var grade = "Z";
+    var maxScore = 0;
+    var month = 0;
+    for(var i=0; i<d.values.length;i++){
+        // Added a few more conditions here for grade with latest date
+        if(d.values[i]['GRADE'] != '' && dateformat.parse(d.values[i]['INSPECTION DATE']).getFullYear() === year 
+		&& dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth() >= month && grade > d.values[i]['GRADE']){
+            month = dateformat.parse(d.values[i]['INSPECTION DATE']).getMonth();
+            grade = d.values[i]['GRADE'];    
+        }
+    }
+    
+    if(grade === "A"){
+        return {color:"#214099", src:"assets/img/A.png", mon:month};
+    }
+    else if(grade === "B"){
+        return {color:"#03A45E", src:"assets/img/B.png", mon:month};
+    }
+    else if(grade === "C"){
+        return {color:"#F8A51B", src:"assets/img/C.png", mon:month};
+    }
+    else{
+        return {color:"#A1A1A1", src:"assets/img/N.png", mon:month};
+    }
+>>>>>>> origin/master
 }
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> origin/master
 function plotLineChart(camis,restaurant_data){
 	var margin = {top: 10, right: 40, bottom: 15, left: 5},
 			width = 250 - margin.left - margin.right,
