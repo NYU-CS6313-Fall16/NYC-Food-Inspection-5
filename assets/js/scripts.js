@@ -9,8 +9,6 @@ var mapboxLayout = 'https://api.mapbox.com/styles/v1/vigneshgawali/ciwnz27st005a
 var g;
 var svg;
 
-var displayMode = "";   // 1 --> Grade, 2 --> Violations 
-
 //Data Variables
 var year = 2016;
 var selectedCuisines = "";
@@ -137,10 +135,6 @@ function addListeners(){
         selectedCuisines = $(this).find("option:selected").text();
         filterAllSelections();
     });
-    
-//    $('.switch-field label').on("click", function(){
-//        setSelectedYear($(this).text());
-//    });
 }
 
 function populateCuisine(){
@@ -407,10 +401,8 @@ function plotLineChart(camis,restaurant_data){
     console.log("Check In Plot: "+allData[0]);
 	vals = d3.nest()
 			.key(function(d) { return dateformat.parse(d['INSPECTION DATE']).getFullYear() })
-			//.rollup(function(leaves) { return d3.max(leaves,function(d){return d['SCORE'];}); })
 		.entries(allData);
 
-	// wrote custom rollup code since d3 rollup function was driving me nuts..
 	var rolled = []; 
 	for(var i=0; i<vals.length; i++){
 		var month = 0;
@@ -444,7 +436,6 @@ function plotLineChart(camis,restaurant_data){
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
    
 	x.domain([2013, 2017]);
-	//y.domain([0, d3.max(vals, function(d) { console.log(d);return d.values; })]);
 	y.domain([0, 80]);
 
 	plot_svg.append("g")
@@ -536,7 +527,6 @@ function heatMapPlotLineChart(violation, cuisine){
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
    
 	x.domain([2013, 2017]);
-	//y.domain([0, d3.max(vals, function(d) { console.log(d);return d.values; })]);
 	y.domain([0, 3500]);
 
 	plot_svg.append("g")
@@ -912,7 +902,7 @@ function renderD3(data){
                             return d.values[0]['CAMIS'] == id ? "black" : undefined;
                         })
                         .attr("r", function(d, i){
-                            return d.values[0]['CAMIS'] == id ? 5 : 3;
+                            return d.values[0]['CAMIS'] == id ? 5 : 2.5;
                         })
                         .style("stroke-width",2);
                     
@@ -933,10 +923,9 @@ function renderD3(data){
                         });	
                 })
                 .on("mouseout", function() {	
-        
                     g.selectAll("circle")
                         .style("stroke", undefined)
-                        .attr("r", 3)
+                        .attr("r", 2.5)
                         .style("stroke-width",0.5);
         
                     div.transition()		
@@ -976,13 +965,3 @@ d3.csv("https://raw.githubusercontent.com/NYU-CS6313-Fall16/NYC-Food-Inspection-
     heatMap(filtered_data, "");
 });
 
-
-//----------------------MISC-------------------------------------------
-
-//function setSelectedYear(yearValue){
-//    year = parseFloat(yearValue);
-//    
-//    console.log("Displayng Data for year "+year);
-//    filterData(all_data, year);
-//    renderD3(filtered_data);
-//}
