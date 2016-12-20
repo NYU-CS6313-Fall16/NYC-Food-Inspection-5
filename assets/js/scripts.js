@@ -428,7 +428,7 @@ function plotLineChart(camis,restaurant_data){
 	var y = d3.scale.linear().range([height, 0]);
 
 	var xAxis = d3.svg.axis().scale(x)
-		.orient("bottom").ticks(5).tickSize("-175");
+		.orient("bottom").ticks(5).tickSize("-175").tickFormat(function(d,i){return d.toString()});
 
 	var yAxis = d3.svg.axis().scale(y)
 		.orient("left").ticks(10).tickSize("-205");
@@ -456,6 +456,14 @@ function plotLineChart(camis,restaurant_data){
 		.attr("class", "y axis")
 		.call(yAxis);
 		
+    plot_svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left - 30)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Violation Score");  
+    
 	var valueline = d3.svg.line()
 		.x(function(d) {   return x(d.key);})
 		.y(function(d) { return y(+d.values); });
@@ -512,7 +520,7 @@ function heatMapPlotLineChart(violation, cuisine){
 	var y = d3.scale.linear().range([height, 0]);
 
 	var xAxis = d3.svg.axis().scale(x)
-		.orient("bottom").ticks(5).tickSize("-175");
+		.orient("bottom").ticks(5).tickSize("-175").tickFormat(function(d,i){return d.toString()});
 
 	var yAxis = d3.svg.axis().scale(y)
 		.orient("left").ticks(10).tickSize("-205");
@@ -546,6 +554,14 @@ function heatMapPlotLineChart(violation, cuisine){
 	
 	plot_svg.append("path")
 		.attr("d", valueline(vals));
+    
+    plot_svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left - 50)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Violation Count");  
 
 	plot_svg.selectAll("dot")
 			.data(vals)
@@ -841,7 +857,7 @@ function getGrade(d){
         imgSrc = "assets/img/B.png";
     }
     else if(grade === 'C'){
-        gradeColor = "#FDD835";
+        gradeColor = "#e5b640";
         imgSrc = "assets/img/C.png";
     }
     else{
