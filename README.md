@@ -10,3 +10,16 @@ We identified 3 major questions that our tool would answer, that would provide t
 
 We have come up with a visualization tool that attempts to satisfactorily answer the above questions. 
 
+Code Structure
+- Dashboard.html is the main html file containing all visualizations.
+- Assets folder contains all static content.
+  + assets/css: CSS Styles
+  + assets/data: Contains the data file. BK5200.csv
+  + assets/img: All static images included in the visualization
+  + assets/js: All javascript code. scripts.js file contains all d3.js code for graphs and data manipulation
+
+Links
+Visualization Link: https://nyu-cs6313-fall16.github.io/NYC-Food-Inspection-5/dashboard.html
+Demo Video: https://vimeo.com/196814827 Video also available in github repo.
+Project Report: In this repo ProjectReport.pdf
+
