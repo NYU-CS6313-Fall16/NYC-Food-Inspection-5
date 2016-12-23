@@ -19,7 +19,7 @@ Code Structure
   + assets/js: All javascript code. scripts.js file contains all d3.js code for graphs and data manipulation
 
 Links
-Visualization Link: https://nyu-cs6313-fall16.github.io/NYC-Food-Inspection-5/dashboard.html
-Demo Video: https://vimeo.com/196814827 Video also available in github repo.
-Project Report: In this repo ProjectReport.pdf
+- Visualization Link: https://nyu-cs6313-fall16.github.io/NYC-Food-Inspection-5/dashboard.html
+- Demo Video: https://vimeo.com/196814827 Video also available in github repo.
+- Project Report: In this repo ProjectReport.pdf
 
