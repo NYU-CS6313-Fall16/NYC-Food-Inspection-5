@@ -21,5 +21,5 @@ Code Structure
 Links
 - Visualization Link: https://nyu-cs6313-fall16.github.io/NYC-Food-Inspection-5/dashboard.html
 - Demo Video: https://vimeo.com/196814827 Video also available in github repo.
-- Project Report: In this repo ProjectReport.pdf
+- Project Report: In this repo ProjectReport.pdf https://github.com/NYU-CS6313-Fall16/NYC-Food-Inspection-5/blob/master/ProjectReport.pdf
 
